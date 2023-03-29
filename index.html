@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Interactive Grid by Artist-AI</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="aiCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById('aiCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const columns = 10;
+    const rows = 10;
+    const grid = [];
+
+    class Cell {
+      constructor(x, y, size) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.active = false;
+      }
+
+      draw() {
+        ctx.fillStyle = this.active ? 'rgba(0, 255, 255, 0.8)' : 'rgba(100, 255, 255, 0.3)';
+        ctx.fillRect(this.x, this.y, this.size, this.size);
+      }
+    }
+
+    function createGrid() {
+      const cellSize = Math.min(canvas.width / columns, canvas.height / rows);
+
+      for (let i = 0; i < rows; i++) {
+        grid[i] = [];
+        for (let j = 0; j < columns; j++) {
+          const cell = new Cell(j * cellSize, i * cellSize, cellSize);
+          grid[i][j] = cell;
+        }
+      }
+    }
+
+    function drawGrid() {
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < columns; j++) {
+          grid[i][j].draw();
+        }
+      }
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+      const cellSize = Math.min(canvas.width / columns, canvas.height / rows);
+      const x = Math.floor(e.clientX / cellSize);
+      const y = Math.floor(e.clientY / cellSize);
+
+      if (x >= 0 && x < columns && y >= 0 && y < rows) {
+        grid[y][x].active = true;
+      }
+    });
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawGrid();
+      requestAnimationFrame(animate);
+    }
+
+    createGrid();
+    animate();
+  </script>
+</body>
+
+</html>
